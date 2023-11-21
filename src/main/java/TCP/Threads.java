@@ -34,7 +34,7 @@ public class Threads extends Thread {
         try {
             System.out.println("Клиент " + getName());
 
-            while (true) {
+            while (clientAccepted.isConnected()) {
                 String operation = (String) sois.readObject();
                 switch (operation) {
                     case "LOGIN": {
@@ -94,6 +94,11 @@ public class Threads extends Thread {
                         soos.writeObject("OK");
 
                         break;
+                    }
+                    case "DELETE_USER_ADMIN":{
+                        user = (User) sois.readObject();
+                        System.out.println(user.toString());
+                        userService.deleteUser(user);
                     }
                 }
 
