@@ -66,7 +66,7 @@ public class Threads extends Thread {
                         break;
                     }
                     case "REDACT_USER_ADMIN":{
-
+                        break;
                     }
                 }
 
