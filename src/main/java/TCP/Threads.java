@@ -40,6 +40,7 @@ public class Threads extends Thread {
                     case "LOGIN": {
                         System.out.println(user.toString());
                         user = (User) sois.readObject();
+                        System.out.println(user.toString());
                         userCheck = userService.findByUsernameAndPassword(user.getUsername(), user.getPassword());
                         soos.writeObject(userCheck);
                         System.out.println(userCheck.toString());

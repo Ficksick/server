@@ -1,6 +1,15 @@
 package Models;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import java.sql.Time;
+import java.util.List;
 
 @Entity
 @Table(name = "film")
@@ -17,11 +26,13 @@ public class Film {
     @Column(name = "mainActor", nullable = false, length = 256)
     private String mainActor;
     @Column(name = "duration", nullable = false)
-    private int duration;
+    private Time duration;
     @Column(name = "age", nullable = false)
     private int age;
+    @OneToMany(mappedBy = "screenings", fetch = FetchType.EAGER)
+    private List<Screening> screenings;
 
-    private Film(int id, String title, String genre, String director, String mainActor, int duration, int age) {
+    private Film(int id, String title, String genre, String director, String mainActor, Time duration, int age) {
         this.film_id = id;
         this.title = title;
         this.genre = genre;
@@ -57,7 +68,7 @@ public class Film {
         return age;
     }
 
-    public int getDuration() {
+    public Time getDuration() {
         return duration;
     }
 
@@ -73,7 +84,7 @@ public class Film {
         this.film_id = film_id;
     }
 
-    public void setDuration(int duration) {
+    public void setDuration(Time duration) {
         this.duration = duration;
     }
 
