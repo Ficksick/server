@@ -1,6 +1,5 @@
 package Service;
 
-import Interface.DAO;
 import DAO.UserDAO;
 import Models.User;
 

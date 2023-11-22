@@ -8,7 +8,7 @@ public class Ticket {
     @OneToOne
     //private int screening_id;
 
-    private int seatNUmber;
+    private int seatNUumber;
 
     private double price;
 
