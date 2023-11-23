@@ -1,8 +1,16 @@
 package Models;
 
+import javax.persistence.*;
+
+@Entity
+@Table(name = "hall")
 public class Hall {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int hall_id;
+    @Column(name = "hallName")
     private String hallName;
+    @Column(name = "capacity")
     private int capacity;
 
     public Hall() {
