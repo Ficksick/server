@@ -1,7 +1,8 @@
 package TCP;
 
-import Service.UserService;
-import Models.User;
+import Models.*;
+import Service.*;
+import org.w3c.dom.ls.LSOutput;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -23,7 +24,17 @@ public class Threads extends Thread {
         ObjectOutputStream soos;
 
         User user = new User();
+        Hall hall = new Hall();
+        Ticket ticket = new Ticket();
+        Screening screening = new Screening();
+        Film film = new Film();
+
         UserService userService = new UserService();
+        HallService hallService = new HallService();
+        TicketService ticketService = new TicketService();
+        ScreeningService screeningService = new ScreeningService();
+        FilmService filmService = new FilmService();
+
         User userCheck = new User();
         try {
             sois = new ObjectInputStream(clientAccepted.getInputStream());
@@ -47,7 +58,7 @@ public class Threads extends Thread {
                         break;
                     }
                     case "REGISTRATION": {
-                        user = new User();
+                        //user = new User();
                         user = (User) sois.readObject();
                         System.out.println(user.toString());
                         userCheck = userService.findByUsernameAndPassword(user.getUsername(), user.getPassword());
@@ -96,13 +107,73 @@ public class Threads extends Thread {
 
                         break;
                     }
-                    case "DELETE_USER_ADMIN":{
+                    case "DELETE_USER_ADMIN": {
                         user = (User) sois.readObject();
-                        System.out.println(user.toString());
                         userService.deleteUser(user);
                     }
-                }
+                    case "VIEW_HALL_ADMIN": {
+                        List<Hall> halls = new ArrayList<>();
+                        halls = hallService.findAll();
+                        System.out.println(halls);
+                        soos.writeObject(halls);
+                        break;
+                    }
+                    case "CREATE_HALL_ADMIN": {
+                        hall = (Hall) sois.readObject();
+                        System.out.println(hall.toString());
+                        hallService.saveHall(hall);
+                        soos.writeObject("OK");
+                        break;
+                    }
+                    case "REDACT_HALL_ADMIN": {
+                        hall = (Hall) sois.readObject();
 
+                        Hall hallToRedact = hallService.findHall(hall.getHall_id());
+
+                        Hall newHall = (Hall) sois.readObject();
+
+                        if(newHall.getHallName() != null){
+                            String newName = newHall.getHallName();
+                            hallToRedact.setHallName(newName);
+                        }
+                        if(newHall.getCapacity() != 0){
+                            int newCapacity = newHall.getCapacity();
+                            hallToRedact.setCapacity(newCapacity);
+                        }
+
+                        hallService.updateHall(hallToRedact);
+
+                        soos.writeObject("OK");
+                        break;
+                    }
+                    case "DELETE_HALL_ADMIN":{
+                        hall = (Hall) sois.readObject();
+                        hallService.deleteHall(hall);
+                        break;
+                    }
+                    case "CREATE_SCREENING_ADMIN":{
+                        break;
+                    }
+                    case "VIEW_SCREENING_ADMIN":{
+                        List<Screening> screenings = new ArrayList<>();
+                        screenings = screeningService.findAll();
+                        soos.writeObject(screenings);
+                        break;
+                    }
+                    case "REDACT_SCREENING_ADMIN":{
+
+                        break;
+                    }
+                    case "DELETE_SCREENING_ADMIN":{
+                        break;
+                    }
+                    case "VIEW_FILMS_ADMIN":{
+                        List<Film> films = new ArrayList<>();
+                        films = filmService.findAll();
+                        soos.writeObject(films);
+                        break;
+                    }
+                }
             }
         } catch (Exception e) {
             System.out.println("Error");

@@ -1,10 +1,11 @@
 package Models;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
 @Table(name = "hall")
-public class Hall {
+public class Hall implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int hall_id;
@@ -12,6 +13,7 @@ public class Hall {
     private String hallName;
     @Column(name = "capacity")
     private int capacity;
+    private static final long serialVersionUID = 234567891L;
 
     public Hall() {
 
@@ -45,5 +47,11 @@ public class Hall {
 
     public void setCapacity(int capacity) {
         this.capacity = capacity;
+    }
+
+    public String toString(){
+        return "id = " + hall_id +
+                "\nhallName = " + hallName +
+                "\ncapacity = " + capacity;
     }
 }

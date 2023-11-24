@@ -8,12 +8,13 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import java.io.Serializable;
 import java.sql.Time;
 import java.util.List;
 
 @Entity
 @Table(name = "film")
-public class Film {
+public class Film implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int film_id;
@@ -29,9 +30,9 @@ public class Film {
     private Time duration;
     @Column(name = "age", nullable = false)
     private int age;
-    @OneToMany(mappedBy = "screenings", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "film", fetch = FetchType.EAGER)
     private List<Screening> screenings;
-
+    private static final long serialVersionUID = 456789123L;
     private Film(int id, String title, String genre, String director, String mainActor, Time duration, int age) {
         this.film_id = id;
         this.title = title;
@@ -42,7 +43,7 @@ public class Film {
         this.age = age;
     }
 
-    private Film(){}
+    public Film(){}
 
     public int getFilm_id() {
         return film_id;

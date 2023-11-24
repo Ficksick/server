@@ -49,7 +49,7 @@ public class ScreeningDAO implements DAO {
     @Override
     public List findAll() {
         Session session = HibernateSessionFactoryUtil.getSessionFactory().openSession();
-        List<Object> screenings = (List<Object>) session.createQuery("From Screenings").list();
+        List<Object> screenings = (List<Object>) session.createQuery("From Screening").list();
         session.close();
         return screenings;
     }

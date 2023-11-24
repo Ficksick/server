@@ -17,6 +17,8 @@
         <mapping class="Models.User"/>
         <mapping class="Models.Ticket"/>
         <mapping class="Models.Hall"/>
+        <mapping class="Models.Screening"/>
+        <mapping class="Models.Film"/>
         <!--добавить классы-->
     </session-factory>
 
