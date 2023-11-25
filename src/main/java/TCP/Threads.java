@@ -114,7 +114,7 @@ public class Threads extends Thread {
                     case "VIEW_HALL_ADMIN": {
                         List<Hall> halls = new ArrayList<>();
                         halls = hallService.findAll();
-                        System.out.println(halls);
+                        //System.out.println(halls);
                         soos.writeObject(halls);
                         break;
                     }
@@ -132,11 +132,11 @@ public class Threads extends Thread {
 
                         Hall newHall = (Hall) sois.readObject();
 
-                        if(newHall.getHallName() != null){
+                        if (newHall.getHallName() != null) {
                             String newName = newHall.getHallName();
                             hallToRedact.setHallName(newName);
                         }
-                        if(newHall.getCapacity() != 0){
+                        if (newHall.getCapacity() != 0) {
                             int newCapacity = newHall.getCapacity();
                             hallToRedact.setCapacity(newCapacity);
                         }
@@ -146,28 +146,83 @@ public class Threads extends Thread {
                         soos.writeObject("OK");
                         break;
                     }
-                    case "DELETE_HALL_ADMIN":{
+                    case "DELETE_HALL_ADMIN": {
                         hall = (Hall) sois.readObject();
                         hallService.deleteHall(hall);
                         break;
                     }
-                    case "CREATE_SCREENING_ADMIN":{
+                    case "CREATE_SCREENING_ADMIN": {
+                        List<Screening> screenings = new ArrayList<>();
+                        screenings = screeningService.findAll();
+                        //System.out.println(screenings);
+                        soos.writeObject(screenings);
+
+                        List<Film> films = new ArrayList<>();
+                        films = filmService.findAll();
+                        soos.writeObject(films);
+
+                        Hall newHall = new Hall();
+                        hall = (Hall) sois.readObject();
+                        newHall = hallService.findHall(hall.getHall_id());
+                        soos.writeObject(newHall);
+
+                        screening = (Screening) sois.readObject();
+                        System.out.println(screening.toString());
+
+                        if(screening.getDate() == null){
+                            soos.writeObject("EXIST");
+                        }else{
+                            soos.writeObject("OK");
+                            screeningService.saveScreening(screening);
+                        }
+
                         break;
                     }
-                    case "VIEW_SCREENING_ADMIN":{
+                    case "VIEW_SCREENING_ADMIN": {
                         List<Screening> screenings = new ArrayList<>();
                         screenings = screeningService.findAll();
                         soos.writeObject(screenings);
                         break;
                     }
-                    case "REDACT_SCREENING_ADMIN":{
+                    case "REDACT_SCREENING_ADMIN": {
+                        Screening screeningToRedactFromClient = (Screening) sois.readObject();
+                        System.out.println(screeningToRedactFromClient);
 
+                        Screening screeningToRedact = screeningService.findByID(screeningToRedactFromClient.getScreening_id());
+                        System.out.println(screeningToRedact);
+
+                        List<Screening> screenings = new ArrayList<>();
+                        screenings = screeningService.findAll();
+                        System.out.println(screenings);
+                        soos.writeObject(screenings);
+
+                        List<Film> films = new ArrayList<>();
+                        films = filmService.findAll();
+                        //System.out.println(films);
+                        soos.writeObject(films);
+
+                        Hall newHall = new Hall();
+                        hall = (Hall) sois.readObject();
+                        newHall = hallService.findHall(hall.getHall_id());
+                        soos.writeObject(newHall);
+
+                        screening = (Screening) sois.readObject();
+                        //System.out.println(screening.toString());
+
+                        if(screening.getDate() == null){
+                            soos.writeObject("EXIST");
+                        }else{
+                            soos.writeObject("OK");
+                            screeningService.saveScreening(screening);
+                        }
                         break;
                     }
-                    case "DELETE_SCREENING_ADMIN":{
+                    case "DELETE_SCREENING_ADMIN": {
+                        screening = (Screening) sois.readObject();
+                        screeningService.deleteScreening(screening);
                         break;
                     }
-                    case "VIEW_FILMS_ADMIN":{
+                    case "VIEW_FILMS_ADMIN": {
                         List<Film> films = new ArrayList<>();
                         films = filmService.findAll();
                         soos.writeObject(films);

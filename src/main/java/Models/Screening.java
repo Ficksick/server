@@ -1,21 +1,20 @@
 package Models;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.sql.Date;
 import java.sql.Time;
 
 @Entity
 @Table(name = "screenings")
-public class Screening {
+public class Screening implements Serializable {
     @Id
     @Column(name = "screening_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int screening_id;
-
     @ManyToOne
     @JoinColumn(name = "film_id")
     private Film film;
-
     @OneToOne
     @JoinColumn(name = "hall_id")
     private Hall hall;
@@ -76,5 +75,18 @@ public class Screening {
 
     public void setHall(Hall hall) {
         this.hall = hall;
+    }
+
+    public int getScreening_id(){
+        return screening_id;
+    }
+
+    public String toString(){
+        return "id = " + screening_id +
+                "\nfilm = " + film +
+                "\nhall = " + hall +
+                "\ndate = " + date +
+                "\nstart = " + startTime +
+                "\nend = " + endTime;
     }
 }

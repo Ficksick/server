@@ -24,4 +24,7 @@ public class ScreeningService {
     public void deleteScreening(Screening screening) {
         screeningDAO.delete(screening);
     }
+    public Screening findByID(int id){
+        return screeningDAO.findByID(id);
+    }
 }
