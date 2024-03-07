@@ -2,6 +2,7 @@ package Service;
 
 import DAO.TicketDAO;
 import Models.Screening;
+import Models.Ticket;
 
 import java.util.List;
 
@@ -11,17 +12,23 @@ public class TicketService {
     public TicketService() {
     }
 
-    public List<Screening> findAll() {
+    public List<Ticket> findAll() {
         return ticketDAO.findAll();
     }
 
-    public void saveScreening(Screening screening) {
-        ticketDAO.save(screening);
+    public void saveTicket(Ticket ticket) {
+        ticketDAO.save(ticket);
     }
-    public void updateScreening(Screening screening) {
-        ticketDAO.update(screening);
+
+    public void updateTicket(Ticket ticket) {
+        ticketDAO.update(ticket);
     }
-    public void deleteScreening(Screening screening) {
-        ticketDAO.delete(screening);
+
+    public void deleteTicket(Ticket ticket) {
+        ticketDAO.delete(ticket);
+    }
+
+    public Ticket findByID(int id) {
+        return ticketDAO.findByID(id);
     }
 }

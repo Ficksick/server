@@ -2,12 +2,13 @@ package TCP;
 
 import Models.*;
 import Service.*;
-import org.w3c.dom.ls.LSOutput;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.sql.Date;
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,18 +50,13 @@ public class Threads extends Thread {
                 String operation = (String) sois.readObject();
                 switch (operation) {
                     case "LOGIN": {
-                        System.out.println(user.toString());
                         user = (User) sois.readObject();
-                        System.out.println(user.toString());
                         userCheck = userService.findByUsernameAndPassword(user.getUsername(), user.getPassword());
                         soos.writeObject(userCheck);
-                        System.out.println(userCheck.toString());
                         break;
                     }
                     case "REGISTRATION": {
-                        //user = new User();
                         user = (User) sois.readObject();
-                        System.out.println(user.toString());
                         userCheck = userService.findByUsernameAndPassword(user.getUsername(), user.getPassword());
 
                         if (userCheck.getUsername() == null) {
@@ -71,10 +67,16 @@ public class Threads extends Thread {
                         }
                         break;
                     }
-                    case "VIEW_USERS_ADMIN": {
+                    case "VIEW_USERS_ADMIN", "VIEW_ACCOUNT_USER": {
                         List<User> users = new ArrayList<>();
                         users = userService.findAll();
                         soos.writeObject(users);
+                        break;
+                    }
+                    case "REDACT_ACCOUNT_USER": {
+                        user = (User) sois.readObject();
+                        userService.updateUser(user);
+                        soos.writeObject("OK");
                         break;
                     }
                     case "REDACT_USER_ADMIN": {
@@ -107,9 +109,20 @@ public class Threads extends Thread {
 
                         break;
                     }
-                    case "DELETE_USER_ADMIN": {
+                    case "DELETE_USER_ADMIN", "DELETE_ACCOUNT_USER": {
                         user = (User) sois.readObject();
+
+                        List<Ticket> tickets = ticketService.findAll();
+
+                        for (Ticket ticketUser : tickets) {
+                            if (ticketUser.getUser().getUser_id() == user.getUser_id()) {
+                                ticketService.deleteTicket(ticketUser);
+                            }
+                        }
+
                         userService.deleteUser(user);
+                        soos.writeObject("OK");
+                        break;
                     }
                     case "VIEW_HALL_ADMIN": {
                         List<Hall> halls = new ArrayList<>();
@@ -154,8 +167,6 @@ public class Threads extends Thread {
                     case "CREATE_SCREENING_ADMIN": {
                         List<Screening> screenings = new ArrayList<>();
                         screenings = screeningService.findAll();
-                        //System.out.println(screenings);
-                        soos.writeObject(screenings);
 
                         List<Film> films = new ArrayList<>();
                         films = filmService.findAll();
@@ -167,18 +178,31 @@ public class Threads extends Thread {
                         soos.writeObject(newHall);
 
                         screening = (Screening) sois.readObject();
-                        System.out.println(screening.toString());
+                        System.out.println("from server \n" + screening.toString());
 
-                        if(screening.getDate() == null){
-                            soos.writeObject("EXIST");
-                        }else{
-                            soos.writeObject("OK");
-                            screeningService.saveScreening(screening);
+                        int check = 0;
+
+                        for (Screening screeningCheck : screenings) {
+                            if (screeningCheck.getHall().getHall_id() == screening.getHall().getHall_id()) {
+                                if (screeningCheck.getDate().compareTo(screening.getDate()) == 0) {
+                                    if (screeningCheck.getStartTime().compareTo(screening.getStartTime()) >= 0
+                                            && (screeningCheck.getEndTime().compareTo(screening.getEndTime()) <= 0
+                                            || screeningCheck.getEndTime().compareTo(screening.getStartTime()) == 0)) {
+                                        check++;
+                                    }
+                                }
+                            }
                         }
 
+                        if (check == 0) {
+                            soos.writeObject("OK");
+                            screeningService.saveScreening(screening);
+                        } else {
+                            soos.writeObject("EXIST");
+                        }
                         break;
                     }
-                    case "VIEW_SCREENING_ADMIN": {
+                    case "VIEW_SCREENING_ADMIN", "VIEW_SCREENING_USER": {
                         List<Screening> screenings = new ArrayList<>();
                         screenings = screeningService.findAll();
                         soos.writeObject(screenings);
@@ -186,35 +210,44 @@ public class Threads extends Thread {
                     }
                     case "REDACT_SCREENING_ADMIN": {
                         Screening screeningToRedactFromClient = (Screening) sois.readObject();
-                        System.out.println(screeningToRedactFromClient);
 
                         Screening screeningToRedact = screeningService.findByID(screeningToRedactFromClient.getScreening_id());
-                        System.out.println(screeningToRedact);
+
+                        soos.writeObject(screeningToRedact);
 
                         List<Screening> screenings = new ArrayList<>();
                         screenings = screeningService.findAll();
-                        System.out.println(screenings);
                         soos.writeObject(screenings);
 
                         List<Film> films = new ArrayList<>();
                         films = filmService.findAll();
-                        //System.out.println(films);
                         soos.writeObject(films);
 
-                        Hall newHall = new Hall();
-                        hall = (Hall) sois.readObject();
-                        newHall = hallService.findHall(hall.getHall_id());
-                        soos.writeObject(newHall);
+                        List<Hall> halls = new ArrayList<>();
+                        halls = hallService.findAll();
+                        soos.writeObject(halls);
 
-                        screening = (Screening) sois.readObject();
-                        //System.out.println(screening.toString());
+                        Screening screeningToRedact1 = (Screening) sois.readObject();
 
-                        if(screening.getDate() == null){
-                            soos.writeObject("EXIST");
-                        }else{
-                            soos.writeObject("OK");
-                            screeningService.saveScreening(screening);
+                        int check = 0;
+
+                        for (Screening screen : screenings) {
+                            if (screeningToRedact1.getHall().getHall_id() == screen.getHall().getHall_id()) {
+                                if (screeningToRedact1.getDate().compareTo(screen.getDate()) == 0) {
+                                    if (screeningToRedact1.getStartTime().compareTo(screen.getStartTime()) >= 0
+                                            || screeningToRedact1.getEndTime().compareTo(screen.getEndTime()) < 0) {
+                                        check++;
+                                    }
+                                }
+                            }
                         }
+
+                        if (check == 0) {
+                            soos.writeObject("OK");
+                        } else {
+                            soos.writeObject("EXIST");
+                        }
+
                         break;
                     }
                     case "DELETE_SCREENING_ADMIN": {
@@ -222,10 +255,95 @@ public class Threads extends Thread {
                         screeningService.deleteScreening(screening);
                         break;
                     }
-                    case "VIEW_FILMS_ADMIN": {
+                    case "FIND_SCREENING_USER": {
+                        screening = (Screening) sois.readObject();
+                        Screening screeningToClient = screeningService.findByID(screening.getScreening_id());
+                        soos.writeObject(screeningToClient);
+                        break;
+                    }
+                    case "VIEW_FILM_ADMIN": {
                         List<Film> films = new ArrayList<>();
                         films = filmService.findAll();
                         soos.writeObject(films);
+                        break;
+                    }
+                    case "CREATE_FILM_ADMIN": {
+                        film = (Film) sois.readObject();
+                        filmService.saveFilm(film);
+                        break;
+                    }
+                    case "DELETE_FILM_ADMIN": {
+                        film = (Film) sois.readObject();
+                        filmService.deleteFilm(film);
+                        break;
+                    }
+                    case "REDACT_FILM_ADMIN": {
+                        film = (Film) sois.readObject();
+                        Film filmToRedact = filmService.findFilm(film.getFilm_id());
+                        Film newFilm = (Film) sois.readObject();
+
+                        if (newFilm.getTitle() != null) {
+                            String newTitle = newFilm.getTitle();
+                            filmToRedact.setTitle(newTitle);
+                        }
+
+                        if (newFilm.getGenre() != null) {
+                            String newGenre = newFilm.getGenre();
+                            filmToRedact.setGenre(newGenre);
+                        }
+
+                        if (newFilm.getDirector() != null) {
+                            String newDirector = newFilm.getDirector();
+                            filmToRedact.setDirector(newDirector);
+                        }
+
+                        if (newFilm.getMainActor() != null) {
+                            String newMainActor = newFilm.getMainActor();
+                            filmToRedact.setMainActor(newMainActor);
+                        }
+
+                        if (newFilm.getDuration() != null) {
+                            Time newTime = newFilm.getDuration();
+                            filmToRedact.setDuration(newTime);
+                        }
+
+                        if (newFilm.getAge() != null) {
+                            String newAge = newFilm.getAge();
+                            filmToRedact.setAge(newAge);
+                        }
+
+                        filmService.updateFilm(filmToRedact);
+                        soos.writeObject("OK");
+                        break;
+                    }
+                    case "ORDER_TICKET_USER": {
+                        ticket = (Ticket) sois.readObject();
+                        ticketService.saveTicket(ticket);
+                        soos.writeObject("OK");
+                        break;
+                    }
+                    case "VIEW_TICKETS_USER": {
+                        List<Ticket> tickets = new ArrayList<>();
+                        tickets = ticketService.findAll();
+                        soos.writeObject(tickets);
+                        break;
+                    }
+                    case "FIND_TICKET_USER": {
+                        ticket = (Ticket) sois.readObject();
+                        Ticket ticketToClient = ticketService.findByID(ticket.getId());
+                        soos.writeObject(ticketToClient);
+                        break;
+                    }
+                    case "REDACT_TICKET_USER": {
+                        ticket = (Ticket) sois.readObject();
+                        ticketService.updateTicket(ticket);
+                        soos.writeObject("OK");
+                        break;
+                    }
+                    case "DELETE_TICKET_USER": {
+                        ticket = (Ticket) sois.readObject();
+                        ticketService.deleteTicket(ticket);
+                        soos.writeObject("OK");
                         break;
                     }
                 }

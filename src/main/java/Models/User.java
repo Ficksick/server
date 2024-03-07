@@ -19,10 +19,9 @@ public class User implements Serializable {
     private String role;
     @Column(name = "password")
     private String password;
-
     private static final long serialVersionUID = 123456789L;
-//    @OneToMany(mappedBy = "users", cascade = CascadeType.ALL, orphanRemoval = true)
-//    private List<Ticket> tickets;
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+    private List<Ticket> tickets;
 
     public User() {}
 

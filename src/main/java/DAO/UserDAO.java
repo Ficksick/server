@@ -63,12 +63,4 @@ public class UserDAO implements DAO {
             return user;
         }
     }
-
-//    @Override
-//    public List findBySmth(String username, String password) {
-//        Session session = HibernateSessionFactoryUtil.getSessionFactory().openSession();
-//        List<Object> users = (List<Object>) session.createQuery("Select From User where username = " + "'" + username + "' and password = '" + password + "'").list();
-//        session.close();
-//        return users;
-//    }
 }

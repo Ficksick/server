@@ -24,6 +24,9 @@ public class Screening implements Serializable {
     private Time startTime;
     @Column(name = "end_time")
     private Time endTime;
+    @Column(name = "price")
+    private double price;
+
 
     private static final long serialVersionUID = 345678912L;
 
@@ -31,11 +34,12 @@ public class Screening implements Serializable {
 
     }
 
-    public Screening(int id, Date date, Time start, Time end) {
+    public Screening(int id, Date date, Time start, Time end, double price) {
         this.screening_id = id;
         this.date = date;
         this.startTime = start;
         this.endTime = end;
+        this.price = price;
     }
 
     public void setDate(Date date){
@@ -80,6 +84,12 @@ public class Screening implements Serializable {
     public int getScreening_id(){
         return screening_id;
     }
+    public double getPrice(){
+        return price;
+    }
+    public void setPrice(double price){
+        this.price = price;
+    }
 
     public String toString(){
         return "id = " + screening_id +
@@ -87,6 +97,7 @@ public class Screening implements Serializable {
                 "\nhall = " + hall +
                 "\ndate = " + date +
                 "\nstart = " + startTime +
-                "\nend = " + endTime;
+                "\nend = " + endTime +
+                "\nprice = " + price;
     }
 }

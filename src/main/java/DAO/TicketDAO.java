@@ -48,7 +48,7 @@ public class TicketDAO implements DAO {
     @Override
     public List findAll() {
         Session session = HibernateSessionFactoryUtil.getSessionFactory().openSession();
-        List<Object> tickets = (List<Object>) session.createQuery("From Tickets").list();
+        List<Object> tickets = (List<Object>) session.createQuery("From Ticket").list();
         session.close();
         return tickets;
     }

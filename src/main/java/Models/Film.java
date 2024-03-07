@@ -18,22 +18,22 @@ public class Film implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int film_id;
-    @Column(name = "title", nullable = false, length = 256)
+    @Column(name = "title")
     private String title;
-    @Column(name = "genre", nullable = false, length = 256)
+    @Column(name = "genre")
     private String genre;
-    @Column(name = "director", nullable = false, length = 256)
+    @Column(name = "director")
     private String director;
-    @Column(name = "mainActor", nullable = false, length = 256)
+    @Column(name = "mainActor")
     private String mainActor;
-    @Column(name = "duration", nullable = false)
+    @Column(name = "duration")
     private Time duration;
-    @Column(name = "age", nullable = false)
-    private int age;
+    @Column(name = "age")
+    private String age;
     @OneToMany(mappedBy = "film", fetch = FetchType.EAGER)
     private List<Screening> screenings;
     private static final long serialVersionUID = 456789123L;
-    private Film(int id, String title, String genre, String director, String mainActor, Time duration, int age) {
+    private Film(int id, String title, String genre, String director, String mainActor, Time duration, String age) {
         this.film_id = id;
         this.title = title;
         this.genre = genre;
@@ -65,7 +65,7 @@ public class Film implements Serializable {
         return mainActor;
     }
 
-    public int getAge() {
+    public String getAge() {
         return age;
     }
 
@@ -73,7 +73,7 @@ public class Film implements Serializable {
         return duration;
     }
 
-    public void setAge(int age) {
+    public void setAge(String age) {
         this.age = age;
     }
 
